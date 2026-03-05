@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CalculatorButton extends StatefulWidget {
   final String text;
@@ -23,7 +24,10 @@ class CalculatorButton extends StatefulWidget {
 class _CalculatorButtonState extends State<CalculatorButton> {
   bool _isPressed = false;
 
-  void _onTapDown(TapDownDetails details) => setState(() => _isPressed = true);
+  void _onTapDown(TapDownDetails details) {
+    HapticFeedback.lightImpact();
+    setState(() => _isPressed = true);
+  }
   
   void _onTapUp(TapUpDetails details) {
     setState(() => _isPressed = false);
@@ -41,7 +45,6 @@ class _CalculatorButtonState extends State<CalculatorButton> {
 
     final bgColor = theme.scaffoldBackgroundColor;
     
-    // Shadows perfectly matching Neumorphism
     final shadowDark = isDark ? const Color(0xFF1F252E) : const Color(0xFFA3B1C6);
     final shadowLight = isDark ? const Color(0xFF37414E) : Colors.white;
 
@@ -67,7 +70,7 @@ class _CalculatorButtonState extends State<CalculatorButton> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            border: _isPressed ? Border.all(color: shadowDark.withOpacity(0.4), width: 1.5) : null,
+            border: _isPressed ? Border.all(color: shadowDark.withValues(alpha: 0.4), width: 1.5) : null,
           ),
           child: Center(
              child: widget.text == '⌫' 

@@ -22,7 +22,7 @@ class DisplayScreen extends StatelessWidget {
               '${logic.previousInput} ${logic.operator}',
               style: TextStyle(
                 fontSize: 24,
-                color: theme.colorScheme.primary.withOpacity(0.8), // Using green highlight
+                color: theme.colorScheme.primary.withValues(alpha: 0.8), 
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -33,7 +33,7 @@ class DisplayScreen extends StatelessWidget {
             child: Text(
               logic.currentInput,
               style: TextStyle(
-                fontSize: 80, // Large modern sizing
+                fontSize: 80, 
                 fontWeight: FontWeight.w600,
                 color: theme.textTheme.bodyLarge?.color, 
                 letterSpacing: -2,

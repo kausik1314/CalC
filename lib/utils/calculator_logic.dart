@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:math' as math;
+
+class HistoryItem {
+  final String equation;
+  final String result;
+  HistoryItem(this.equation, this.result);
+}
 
 class CalculatorLogic extends ChangeNotifier {
   String _currentInput = '0';
   String _previousInput = '';
   String _operator = '';
   bool _shouldResetInput = false;
+  
+  final List<HistoryItem> _history = [];
 
   String get currentInput => _currentInput;
   String get previousInput => _previousInput;
   String get operator => _operator;
+  List<HistoryItem> get history => _history;
 
   void onButtonPressed(String text) {
+    HapticFeedback.lightImpact(); 
+
     if (text == 'C') {
       clear();
     } else if (text == '⌫') {
@@ -23,16 +36,54 @@ class CalculatorLogic extends ChangeNotifier {
       toggleSign();
     } else if (['+', '−', '×', '÷'].contains(text)) {
       setOperator(text);
+    } else if (['sin', 'cos', 'tan', 'log', 'ln', '√', 'x²'].contains(text)) {
+      applyScientific(text);
+    } else if (text == 'π') {
+      appendNumber(math.pi.toString());
+      _shouldResetInput = true;
+    } else if (text == 'e') {
+      appendNumber(math.e.toString());
+      _shouldResetInput = true;
     } else {
       appendNumber(text);
     }
   }
 
+  void applyScientific(String func) {
+    double? current = double.tryParse(_currentInput);
+    if (current == null) return;
+    
+    double result = 0;
+    String equationPrefix = '';
+    switch (func) {
+      case 'sin': result = math.sin(current * (math.pi / 180)); equationPrefix = 'sin'; break; 
+      case 'cos': result = math.cos(current * (math.pi / 180)); equationPrefix = 'cos'; break;
+      case 'tan': result = math.tan(current * (math.pi / 180)); equationPrefix = 'tan'; break;
+      case 'log': result = math.log(current) / math.ln10; equationPrefix = 'log'; break;
+      case 'ln': result = math.log(current); equationPrefix = 'ln'; break;
+      case '√': 
+        if (current < 0) { _currentInput = 'Error'; notifyListeners(); return; }
+        result = math.sqrt(current); equationPrefix = '√'; break;
+      case 'x²': result = math.pow(current, 2).toDouble(); equationPrefix = 'sqr'; break;
+    }
+    
+    String eq = '$equationPrefix($current)';
+    _currentInput = result.toString();
+    _formatOutput();
+    
+    _history.insert(0, HistoryItem(eq, _currentInput));
+    
+    _shouldResetInput = true;
+    notifyListeners();
+  }
+
   void clear() {
-    _currentInput = '0';
-    _previousInput = '';
-    _operator = '';
-    _shouldResetInput = false;
+    _currentInput = '0'; _previousInput = ''; _operator = ''; _shouldResetInput = false;
+    notifyListeners();
+  }
+
+  void clearHistory() {
+    _history.clear();
     notifyListeners();
   }
 
@@ -86,8 +137,10 @@ class CalculatorLogic extends ChangeNotifier {
   void calculatePercentage() {
     double? current = double.tryParse(_currentInput);
     if (current != null) {
+      String eq = '$_currentInput%';
       _currentInput = (current / 100).toString();
       _formatOutput();
+      _history.insert(0, HistoryItem(eq, _currentInput));
       notifyListeners();
     }
   }
@@ -99,6 +152,8 @@ class CalculatorLogic extends ChangeNotifier {
     if (num1 == null || num2 == null) return;
 
     double result = 0;
+    String eq = '$_previousInput $_operator $_currentInput';
+    
     switch (_operator) {
       case '+': result = num1 + num2; break;
       case '−': result = num1 - num2; break;
@@ -116,6 +171,9 @@ class CalculatorLogic extends ChangeNotifier {
     }
     _currentInput = result.toString();
     _formatOutput();
+    
+    _history.insert(0, HistoryItem(eq, _currentInput));
+    
     _previousInput = '';
     _operator = '';
     _shouldResetInput = true;
