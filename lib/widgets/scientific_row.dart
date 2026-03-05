@@ -32,7 +32,9 @@ class ScientificRow extends StatelessWidget {
                 HapticFeedback.lightImpact();
                 logic.onButtonPressed(func);
               },
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOutCubic,
                 margin: const EdgeInsets.only(right: 12, top: 4, bottom: 4, left: 2),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(

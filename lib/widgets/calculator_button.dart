@@ -55,7 +55,8 @@ class _CalculatorButtonState extends State<CalculatorButton> {
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
+        duration: Duration(milliseconds: _isPressed ? 50 : 600),
+        curve: Curves.easeOutCubic,
         margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
         decoration: BoxDecoration(
           color: bgColor,

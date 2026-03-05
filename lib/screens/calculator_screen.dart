@@ -97,7 +97,8 @@ class CalculatorScreen extends StatelessWidget {
           HapticFeedback.lightImpact();
           themeProvider.toggleTheme();
         },
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
           width: 84,
           height: 40,
           decoration: BoxDecoration(
@@ -125,7 +126,8 @@ class CalculatorScreen extends StatelessWidget {
                 curve: Curves.easeInOut,
                 left: isDark ? 44 : 4,
                 top: 4,
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 600),
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
